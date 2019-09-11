@@ -1,5 +1,8 @@
 package ds.circularLinkedList;
 
-public class Node {
+class Node {
 
+	Node next;
+	Node previous;
+	Object value;
 }
