@@ -6,7 +6,7 @@ public class LinkedList implements Iterator<Object>{
 	
 	private Node head;
 	private Node tail;
-	private int length;
+	private int size;
 	private Node itObj;
 	private int itrSize;
 	
@@ -21,7 +21,7 @@ public class LinkedList implements Iterator<Object>{
 			head.previous = tail;
 			tail.next = head;
 		}
-		length++;
+		size++;
 	}
 
 	public Object getFirst() {
@@ -33,25 +33,35 @@ public class LinkedList implements Iterator<Object>{
 	}
 	
 	public boolean isEmpty() {
-		return length == 0;
+		return size == 0;
 	}
 	
-	public int indexOf() {
-		
+	public int indexOf(Object obj) {
+		Node node = head;
+		int i = 0;
+		while (i<size) {
+			if (node.value.equals(obj)) {
+				return i;
+			}
+			node = node.next;
+			i++;
+		}
 		return -1;
 	}
 	
 	public Object get(int index) {
-		if(index >= length) {
-			return new ArrayIndexOutOfBoundsException("List index is out of bounds");
-		}
+		this.checkListIndex(index);
+		return this.getIndexedNode(index).value;
+	}
+	
+	private Node getIndexedNode(int index) {
 		Node node = head;
 		int i = 0;
-		while (i<length) {
+		while (i <= index) {
 			node = node.next;
 			i++;
 		}
-		return node.value;
+		return node;
 	}
 	
 	public boolean contains(Object obj) {
@@ -65,36 +75,42 @@ public class LinkedList implements Iterator<Object>{
 	private Node getDesiredNode(Object obj) {
 		Node node = head;
 		int i = 0;
-		while (i<length) {
+		while (i<size) {
 			if(node.value.equals(obj)) {
 				return node;
 			}
 			node = node.next;
 			i++;
 		}
-		return null;
+		throw new RuntimeException("Given value is not found in list");
+	}
+	
+	private boolean isIndexOfList(int index) {
+		return index >= 0 && index < size;
+	}
+	
+	private void checkListIndex(int index) {
+		if(!this.isIndexOfList(index)) {
+			throw new ArrayIndexOutOfBoundsException("List index is out of bounds");
+		}
 	}
 	
 	public Object remove(Object obj) {
 		Node node = this.getDesiredNode(obj);
-		if (node == null) {
-			throw new ArrayIndexOutOfBoundsException("List index is out of bounds");
-		}
 		node.previous.next = node.next;
 		node.next.previous = node.previous;
-		length--;
+		size--;
 		return obj;
 	}
 	
 	public Iterator<Object> iterator() {
-		this.itrSize = length;
+		this.itrSize = size;
 		this.itObj = head;
 		return this;
 	}
 
 	@Override
 	public boolean hasNext() {
-		
 		return this.itrSize > 0;
 	}
 
@@ -104,5 +120,11 @@ public class LinkedList implements Iterator<Object>{
 		this.itObj = this.itObj.next;
 		itrSize--;
 		return value;
+	}
+	
+	private static class Node {
+		Node next;
+		Node previous;
+		Object value;
 	}
 }
